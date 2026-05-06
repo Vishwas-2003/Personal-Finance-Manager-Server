@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -15,6 +16,7 @@ public class AuthServiceTests
     private readonly Mock<IUserRepository> _userRepository = new();
     private readonly Mock<IPasswordHasher<User>> _passwordHasher = new();
     private readonly Mock<IJwtTokenService> _jwtTokenService = new();
+    private readonly Mock<IMapper> _mapper = new();
     private readonly IOptions<JwtOptions> _jwtOptions = Options.Create(new JwtOptions
     {
         RefreshTokenDays = 7,
@@ -23,7 +25,15 @@ public class AuthServiceTests
     [Fact]
     public async Task RegisterAsync_should_create_user_and_return_tokens()
     {
-        var request = new RegisterRequest { Email = "test@example.com", Password = "Pass@123" };
+        var request = new RegisterRequest
+        {
+            Name = "Test User",
+            MobileNumber = "9999999999",
+            Age = 30,
+            Address = "Test Address",
+            Email = "test@example.com",
+            Password = "Pass@123",
+        };
         var tokenResponse = new AuthResponse { AccessToken = "token", RefreshToken = "refresh-token" };
 
         _userRepository.Setup(x => x.GetByEmailAsync("test@example.com", It.IsAny<CancellationToken>()))
@@ -32,6 +42,16 @@ public class AuthServiceTests
             .Returns("hashed-password");
         _jwtTokenService.Setup(x => x.GenerateTokens(It.IsAny<User>()))
             .Returns(tokenResponse);
+        _mapper.Setup(x => x.Map<User>(request)).Returns(new User
+        {
+            Name = "Test User",
+            MobileNumber = "9999999999",
+            Age = 30,
+            Address = "Test Address",
+            Email = "test@example.com",
+            PasswordHash = string.Empty,
+            CreatedAtUtc = DateTime.UtcNow,
+        });
 
         var sut = CreateSut();
 
@@ -49,9 +69,35 @@ public class AuthServiceTests
     [Fact]
     public async Task RegisterAsync_should_throw_when_email_already_exists()
     {
-        var request = new RegisterRequest { Email = "existing@example.com", Password = "Pass@123" };
+        var request = new RegisterRequest
+        {
+            Name = "Existing User",
+            MobileNumber = "9999999998",
+            Age = 31,
+            Address = "Existing Address",
+            Email = "existing@example.com",
+            Password = "Pass@123",
+        };
         _userRepository.Setup(x => x.GetByEmailAsync("existing@example.com", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new User { Email = "existing@example.com", PasswordHash = "hash" });
+            .ReturnsAsync(new User
+            {
+                Name = "Existing User",
+                MobileNumber = "9999999998",
+                Age = 31,
+                Address = "Existing Address",
+                Email = "existing@example.com",
+                PasswordHash = "hash",
+            });
+        _mapper.Setup(x => x.Map<User>(request)).Returns(new User
+        {
+            Name = "Existing User",
+            MobileNumber = "9999999998",
+            Age = 31,
+            Address = "Existing Address",
+            Email = "existing@example.com",
+            PasswordHash = string.Empty,
+            CreatedAtUtc = DateTime.UtcNow,
+        });
 
         var sut = CreateSut();
 
@@ -62,7 +108,16 @@ public class AuthServiceTests
     public async Task LoginAsync_should_return_tokens_when_credentials_are_valid()
     {
         var request = new LoginRequest { Email = "test@example.com", Password = "Pass@123" };
-        var user = new User { Id = 5, Email = "test@example.com", PasswordHash = "stored-hash" };
+        var user = new User
+        {
+            Id = 5,
+            Name = "Test User",
+            MobileNumber = "9999999999",
+            Age = 30,
+            Address = "Test Address",
+            Email = "test@example.com",
+            PasswordHash = "stored-hash",
+        };
         var tokenResponse = new AuthResponse { AccessToken = "token", RefreshToken = "new-refresh-token" };
 
         _userRepository.Setup(x => x.GetByEmailAsync("test@example.com", It.IsAny<CancellationToken>()))
@@ -84,7 +139,15 @@ public class AuthServiceTests
     public async Task LoginAsync_should_throw_when_password_is_invalid()
     {
         var request = new LoginRequest { Email = "test@example.com", Password = "wrong" };
-        var user = new User { Email = "test@example.com", PasswordHash = "stored-hash" };
+        var user = new User
+        {
+            Name = "Test User",
+            MobileNumber = "9999999999",
+            Age = 30,
+            Address = "Test Address",
+            Email = "test@example.com",
+            PasswordHash = "stored-hash",
+        };
 
         _userRepository.Setup(x => x.GetByEmailAsync("test@example.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -103,6 +166,10 @@ public class AuthServiceTests
         _userRepository.Setup(x => x.GetByRefreshTokenAsync(request.RefreshToken, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new User
             {
+                Name = "Test User",
+                MobileNumber = "9999999999",
+                Age = 30,
+                Address = "Test Address",
                 Email = "test@example.com",
                 PasswordHash = "hash",
                 RefreshToken = request.RefreshToken,
@@ -121,6 +188,10 @@ public class AuthServiceTests
         var user = new User
         {
             Id = 10,
+            Name = "Test User",
+            MobileNumber = "9999999999",
+            Age = 30,
+            Address = "Test Address",
             Email = "test@example.com",
             PasswordHash = "hash",
             RefreshToken = "valid-token",
@@ -147,6 +218,7 @@ public class AuthServiceTests
             _userRepository.Object,
             _passwordHasher.Object,
             _jwtTokenService.Object,
+            _mapper.Object,
             _jwtOptions);
     }
 }

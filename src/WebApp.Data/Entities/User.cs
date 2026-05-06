@@ -3,6 +3,10 @@ namespace WebApp.Data.Entities;
 public class User
 {
     public int Id { get; set; }
+    public required string Name { get; set; }
+    public required string MobileNumber { get; set; }
+    public required int Age { get; set; }
+    public required string Address { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
     public DateTime CreatedAtUtc { get; set; }
