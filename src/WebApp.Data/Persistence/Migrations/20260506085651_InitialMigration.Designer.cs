@@ -12,8 +12,8 @@ using WebApp.Data.Persistence;
 namespace WebApp.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260506064432_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260506085651_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,24 +76,131 @@ namespace WebApp.Data.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Type")
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryTypeId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryTypeId = 1,
+                            Name = "Groceries"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryTypeId = 1,
+                            Name = "Dining Out"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryTypeId = 2,
+                            Name = "Fuel"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryTypeId = 2,
+                            Name = "Public Transport"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryTypeId = 3,
+                            Name = "Electricity"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryTypeId = 3,
+                            Name = "Internet"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryTypeId = 4,
+                            Name = "Monthly Salary"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryTypeId = 4,
+                            Name = "Freelance Income"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryTypeId = 5,
+                            Name = "Medical"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryTypeId = 5,
+                            Name = "Shopping"
+                        });
+                });
+
+            modelBuilder.Entity("WebApp.Data.Entities.CategoryType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Categories", null, t =>
+                    b.ToTable("CategoryTypes");
+
+                    b.HasData(
+                        new
                         {
-                            t.HasCheckConstraint("CK_Categories_Type", "[Type] IN ('Food', 'Travel', 'Bills', 'Salary', 'Other')");
+                            Id = 1,
+                            Name = "Food"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Travel"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Bills"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Salary"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Other"
                         });
                 });
 
@@ -239,6 +346,17 @@ namespace WebApp.Data.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApp.Data.Entities.Category", b =>
+                {
+                    b.HasOne("WebApp.Data.Entities.CategoryType", "CategoryType")
+                        .WithMany("Categories")
+                        .HasForeignKey("CategoryTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CategoryType");
+                });
+
             modelBuilder.Entity("WebApp.Data.Entities.Expense", b =>
                 {
                     b.HasOne("WebApp.Data.Entities.Category", "Category")
@@ -284,6 +402,11 @@ namespace WebApp.Data.Persistence.Migrations
                     b.Navigation("Expenses");
 
                     b.Navigation("Incomes");
+                });
+
+            modelBuilder.Entity("WebApp.Data.Entities.CategoryType", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("WebApp.Data.Entities.User", b =>

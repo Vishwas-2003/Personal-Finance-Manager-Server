@@ -15,4 +15,8 @@
     <ProjectReference Include="..\WebApp.Common\WebApp.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
+
 </Project>

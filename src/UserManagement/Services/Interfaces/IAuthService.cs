@@ -1,7 +1,11 @@
+using WebApp.Common.Models.Auth;
+
 namespace UserManagement.Services.Interfaces;
 
 public interface IAuthService
 {
-    Task<bool> IsEmailAvailableAsync(string email, CancellationToken cancellationToken = default);
+    Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
+    Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
+    Task<AuthResponse> RefreshAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default);
 }
 

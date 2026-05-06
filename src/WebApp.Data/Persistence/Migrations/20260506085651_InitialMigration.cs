@@ -3,27 +3,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace WebApp.Data.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "CategoryTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                    table.CheckConstraint("CK_Categories_Type", "[Type] IN ('Food', 'Travel', 'Bills', 'Salary', 'Other')");
+                    table.PrimaryKey("PK_CategoryTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,6 +41,26 @@ namespace WebApp.Data.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CategoryTypeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_CategoryTypes_CategoryTypeId",
+                        column: x => x.CategoryTypeId,
+                        principalTable: "CategoryTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,6 +154,35 @@ namespace WebApp.Data.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "CategoryTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Food" },
+                    { 2, "Travel" },
+                    { 3, "Bills" },
+                    { 4, "Salary" },
+                    { 5, "Other" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "CategoryTypeId", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, "Groceries" },
+                    { 2, 1, "Dining Out" },
+                    { 3, 2, "Fuel" },
+                    { 4, 2, "Public Transport" },
+                    { 5, 3, "Electricity" },
+                    { 6, 3, "Internet" },
+                    { 7, 4, "Monthly Salary" },
+                    { 8, 4, "Freelance Income" },
+                    { 9, 5, "Medical" },
+                    { 10, 5, "Shopping" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Budgets_CategoryId",
                 table: "Budgets",
@@ -146,8 +195,19 @@ namespace WebApp.Data.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Categories_CategoryTypeId",
+                table: "Categories",
+                column: "CategoryTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Categories_Name",
                 table: "Categories",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryTypes_Name",
+                table: "CategoryTypes",
                 column: "Name",
                 unique: true);
 
@@ -195,6 +255,9 @@ namespace WebApp.Data.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "CategoryTypes");
         }
     }
 }

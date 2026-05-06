@@ -1,9 +1,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UserManagement.Configuration;
 using UserManagement.Services;
 using UserManagement.Services.Interfaces;
 using WebApp.Data.Repositories;
 using WebApp.Data.Repositories.Interfaces;
+using WebApp.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace UserManagement;
 
@@ -17,6 +20,18 @@ public static class DependencyInjection
 
     public static IServiceCollection RegisterTenantServices(this IServiceCollection services)
     {
+        services
+            .AddOptions<JwtOptions>()
+            .BindConfiguration(JwtOptions.SectionName)
+            .ValidateDataAnnotations()
+            .Validate(
+                x => !string.IsNullOrWhiteSpace(x.Secret)
+                    && !string.IsNullOrWhiteSpace(x.Issuer)
+                    && !string.IsNullOrWhiteSpace(x.Audience),
+                "Jwt configuration is missing required values.");
+
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         return services;
     }

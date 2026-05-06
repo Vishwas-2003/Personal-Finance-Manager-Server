@@ -8,22 +8,13 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
-        builder.ToTable(
-            "Categories",
-            t => t.HasCheckConstraint(
-                "CK_Categories_Type",
-                "[Type] IN ('Food', 'Travel', 'Bills', 'Salary', 'Other')"));
+        builder.HasData(SeedData.CategoryData);
 
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Name)
             .IsRequired()
             .HasMaxLength(100);
-
-        builder.Property(e => e.Type)
-            .HasConversion<string>()
-            .IsRequired()
-            .HasMaxLength(50);
 
         builder.HasIndex(e => e.Name)
             .IsUnique();
