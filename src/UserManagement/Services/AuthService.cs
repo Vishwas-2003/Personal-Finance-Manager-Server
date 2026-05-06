@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using UserManagement.Configuration;
@@ -12,23 +13,20 @@ public class AuthService(
     IUserRepository userRepository,
     IPasswordHasher<User> passwordHasher,
     IJwtTokenService jwtTokenService,
+    IMapper mapper,
     IOptions<JwtOptions> jwtOptionsAccessor) : IAuthService
 {
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        var email = request.Email.Trim().ToLowerInvariant();
-        var existingUser = await userRepository.GetByEmailAsync(email, cancellationToken);
+        var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+        var existingUser = await userRepository.GetByEmailAsync(normalizedEmail, cancellationToken);
         if (existingUser is not null)
         {
             throw new InvalidOperationException("User with this email already exists.");
         }
 
-        var user = new User
-        {
-            Email = email,
-            PasswordHash = string.Empty,
-            CreatedAtUtc = DateTime.UtcNow,
-        };
+        var user = mapper.Map<User>(request);
+        user.PasswordHash = string.Empty;
 
         user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
 
@@ -39,6 +37,7 @@ public class AuthService(
         await userRepository.AddAsync(user, cancellationToken);
         await userRepository.SaveChangesAsync(cancellationToken);
 
+        PopulateUserProfile(authResponse, user);
         return authResponse;
     }
 
@@ -62,6 +61,7 @@ public class AuthService(
         user.RefreshTokenExpiresUtc = DateTime.UtcNow.AddDays(jwtOptionsAccessor.Value.RefreshTokenDays);
         await userRepository.SaveChangesAsync(cancellationToken);
 
+        PopulateUserProfile(authResponse, user);
         return authResponse;
     }
 
@@ -78,6 +78,16 @@ public class AuthService(
         user.RefreshTokenExpiresUtc = DateTime.UtcNow.AddDays(jwtOptionsAccessor.Value.RefreshTokenDays);
         await userRepository.SaveChangesAsync(cancellationToken);
 
+        PopulateUserProfile(authResponse, user);
         return authResponse;
+    }
+
+    private static void PopulateUserProfile(AuthResponse response, User user)
+    {
+        response.Name = user.Name;
+        response.MobileNumber = user.MobileNumber;
+        response.Age = user.Age;
+        response.Address = user.Address;
+        response.Email = user.Email;
     }
 }

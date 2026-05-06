@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserManagement.Configuration;
 using UserManagement.Services;
 using UserManagement.Services.Interfaces;
+using WebApp.Data.Entities;
 using WebApp.Data.Repositories;
 using WebApp.Data.Repositories.Interfaces;
-using WebApp.Data.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace UserManagement;
 
@@ -20,6 +20,9 @@ public static class DependencyInjection
 
     public static IServiceCollection RegisterTenantServices(this IServiceCollection services)
     {
+        services.AddAutoMapper(
+            typeof(DependencyInjection).Assembly,
+            typeof(WebApp.Data.DependencyInjection).Assembly);
         services
             .AddOptions<JwtOptions>()
             .BindConfiguration(JwtOptions.SectionName)
