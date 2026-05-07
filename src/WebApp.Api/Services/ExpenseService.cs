@@ -1,4 +1,5 @@
 ﻿using WebApp.Api.Services.Interfaces;
+using WebApp.Common.Models.Expense;
 using WebApp.Data.Entities;
 using WebApp.Data.Repositories.Interfaces;
 
@@ -10,6 +11,16 @@ namespace WebApp.Api.Services
         public ExpenseService(IExpenseRepository expenseRepository) : base(expenseRepository)
         {
             _expenseRepository = expenseRepository;
+        }
+
+        public async Task<List<ExpenceResponseModel>> GetExpensesByUserId(int userId)
+        {
+            return await _expenseRepository.GetExpensesByUserId(userId);
+        }
+
+        public async  Task<bool> DeleteExpenseById(int expenseId)
+        {
+            return await DeleteAsync(expenseId);
         }
     }
 }

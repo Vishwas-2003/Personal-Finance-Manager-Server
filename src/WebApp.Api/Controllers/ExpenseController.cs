@@ -30,5 +30,27 @@ namespace WebApp.Api.Controllers
             }
             return BadRequest();
         }
+
+        [Authorize]
+        [HttpGet("get/{userId}")]
+        public async Task<ActionResult> GetExpenses([FromRoute] int userId) {
+            var result = await _expenseService.GetExpensesByUserId(userId);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest();
+        }
+
+        [Authorize]
+        [HttpDelete("delete/{expenseId}")]
+        public async Task<ActionResult> DeleteExpense([FromRoute] int expenseId) {
+            var result = await _expenseService.DeleteExpenseById(expenseId);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest("Delete Failed!");
+        }
     }
 }

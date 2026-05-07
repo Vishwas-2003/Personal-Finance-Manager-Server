@@ -38,26 +38,6 @@ public static class AuthenticationExtensions
 
         services.AddAuthorization();
 
-        services.AddSwaggerGen(options =>
-        {
-            var jwtSecurityScheme = new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Enter: Bearer {your JWT token}",
-            };
-
-            options.AddSecurityDefinition("Bearer", jwtSecurityScheme);
-            options.AddSecurityRequirement(
-                _ => new OpenApiSecurityRequirement
-                {
-                    { new OpenApiSecuritySchemeReference("Bearer"), new List<string>() },
-                });
-        });
-
         return services;
     }
 }

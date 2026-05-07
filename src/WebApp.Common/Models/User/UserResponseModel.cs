@@ -1,0 +1,12 @@
+﻿namespace WebApp.Common.Models.User
+{
+    public class UserResponseModel
+    {
+        public int Id { get; set; }
+        public required string Name { get; set; }
+        public required string MobileNumber { get; set; }
+        public required int Age { get; set; }
+        public required string Address { get; set; }
+        public required string Email { get; set; }
+    }
+}
