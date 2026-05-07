@@ -1,5 +1,6 @@
 using AutoMapper;
 using WebApp.Common.Models.Auth;
+using WebApp.Common.Models.User;
 using WebApp.Data.Entities;
 
 namespace WebApp.Data.Profiles;
@@ -36,5 +37,7 @@ public class AuthMappingProfile : Profile
             .ForMember(
                 destination => destination.RefreshTokenExpiresUtc,
                 options => options.Ignore());
+
+        CreateMap<UserResponseModel, User>().ReverseMap();
     }
 }

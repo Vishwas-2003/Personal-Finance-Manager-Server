@@ -8,7 +8,8 @@ public class ExpenseProfile : Profile
 {
     public ExpenseProfile()
     {
-        CreateMap<ExpenseModel, Expense>();
+        CreateMap<ExpenseModel, Expense>().ReverseMap();
+        CreateMap<ExpenceResponseModel, Expense>().ReverseMap();
     }
 }
 
