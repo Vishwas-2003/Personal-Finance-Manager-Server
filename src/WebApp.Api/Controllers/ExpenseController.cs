@@ -9,6 +9,7 @@ namespace WebApp.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseService _expenseService;
@@ -18,10 +19,10 @@ namespace WebApp.Api.Controllers
             _expenseService = expenseService;
             _mapper = mapper;
         }
-    
-        [Authorize]
+
         [HttpPost("add")]
-        public async Task<ActionResult> AddExpense(ExpenseModel expense) {
+        public async Task<ActionResult> AddExpense(ExpenseModel expense)
+        {
             var mappedExpense = _mapper.Map<Expense>(expense);
             var result = await _expenseService.CreateAsync(mappedExpense);
             if (result != null)
@@ -31,9 +32,9 @@ namespace WebApp.Api.Controllers
             return BadRequest();
         }
 
-        [Authorize]
         [HttpGet("get/{userId}")]
-        public async Task<ActionResult> GetExpenses([FromRoute] int userId) {
+        public async Task<ActionResult> GetExpenses([FromRoute] int userId)
+        {
             var result = await _expenseService.GetExpensesByUserId(userId);
             if (result != null)
             {
@@ -42,9 +43,9 @@ namespace WebApp.Api.Controllers
             return BadRequest();
         }
 
-        [Authorize]
         [HttpDelete("delete/{expenseId}")]
-        public async Task<ActionResult> DeleteExpense([FromRoute] int expenseId) {
+        public async Task<ActionResult> DeleteExpense([FromRoute] int expenseId)
+        {
             var result = await _expenseService.DeleteExpenseById(expenseId);
             if (result)
             {

@@ -1,5 +1,4 @@
-﻿using WebApp.Common.Enums;
-using WebApp.Common.Models.Category;
+﻿using WebApp.Common.Models.Category;
 using WebApp.Common.Models.User;
 
 namespace WebApp.Common.Models.Expense
