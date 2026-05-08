@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped(typeof(ICRUDBaseRepository<>), typeof(CRUDBaseRepository<>));
         services.AddScoped<IExpenseRepository, ExpenseRepository>();
+        services.AddScoped<IIncomeRepository, IncomeRepository>();
         return services;
     }
 
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped(typeof(ICRUDBaseService<>), typeof(CRUDBaseService<>));
         services.AddScoped<IExpenseService, ExpenseService>();
+        services.AddScoped<IIncomeService, IncomeService>();
         return services;
     }
 
