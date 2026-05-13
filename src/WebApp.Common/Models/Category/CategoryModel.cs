@@ -1,6 +1,4 @@
-﻿using WebApp.Common.Enums;
-
-namespace WebApp.Common.Models.Category
+﻿namespace WebApp.Common.Models.Category
 {
     public class CategoryModel
     {
