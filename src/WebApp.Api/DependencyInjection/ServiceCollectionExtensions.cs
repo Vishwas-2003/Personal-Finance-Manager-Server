@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IExpenseRepository, ExpenseRepository>();
         services.AddScoped<IIncomeRepository, IncomeRepository>();
         services.AddScoped<IBudgetRepository, BudgetRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
         return services;
     }
 
@@ -22,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IIncomeService, IncomeService>();
         services.AddScoped<IBudgetService, BudgetService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         return services;
     }
 
