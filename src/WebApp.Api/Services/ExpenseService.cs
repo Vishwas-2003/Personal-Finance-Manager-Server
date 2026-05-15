@@ -13,7 +13,7 @@ namespace WebApp.Api.Services
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<List<ExpenceResponseModel>> GetExpensesByUserId(int userId)
+        public async Task<List<ExpenseResponseModel>> GetExpensesByUserId(int userId)
         {
             return await _expenseRepository.GetExpensesByUserId(userId);
         }

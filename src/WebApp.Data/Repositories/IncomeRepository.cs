@@ -20,7 +20,6 @@ namespace WebApp.Data.Repositories
         public async Task<List<IncomeResponseModel>> GetIncomeByUserId(int userId)
         {
             var Incomes = await _dbContext.Incomes
-                .Include(income => income.User)
                 .Include(income => income.Category)
                     .ThenInclude(category => category.CategoryType)
                 .Where(e => e.UserId == userId).ToListAsync();

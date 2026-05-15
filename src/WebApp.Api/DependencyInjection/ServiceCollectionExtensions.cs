@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IIncomeService, IncomeService>();
         services.AddScoped<IBudgetService, BudgetService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ISummaryService, SummaryService>();
         return services;
     }
 

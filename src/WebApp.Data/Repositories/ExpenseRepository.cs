@@ -17,15 +17,14 @@ namespace WebApp.Data.Repositories
             _mapper = mapper;
         }
 
-        public async Task<List<ExpenceResponseModel>> GetExpensesByUserId(int userId)
+        public async Task<List<ExpenseResponseModel>> GetExpensesByUserId(int userId)
         {
             var expenses = await _dbContext.Expenses
-                .Include(expence => expence.User)
                 .Include(expence => expence.Category)
                     .ThenInclude(category => category.CategoryType)
                 .Where(e => e.UserId == userId).ToListAsync();
 
-            return _mapper.Map<List<ExpenceResponseModel>>(expenses);
+            return _mapper.Map<List<ExpenseResponseModel>>(expenses);
         }
     }
 }
