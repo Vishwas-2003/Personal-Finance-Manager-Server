@@ -9,7 +9,7 @@ public class ExpenseProfile : Profile
     public ExpenseProfile()
     {
         CreateMap<ExpenseModel, Expense>().ReverseMap();
-        CreateMap<ExpenceResponseModel, Expense>().ReverseMap();
+        CreateMap<ExpenseResponseModel, Expense>().ReverseMap();
     }
 }
 

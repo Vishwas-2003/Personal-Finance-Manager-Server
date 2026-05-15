@@ -5,6 +5,6 @@ namespace WebApp.Data.Repositories.Interfaces
 {
     public interface IExpenseRepository : ICRUDBaseRepository<Expense>
     {
-        Task<List<ExpenceResponseModel>> GetExpensesByUserId(int userId);
+        Task<List<ExpenseResponseModel>> GetExpensesByUserId(int userId);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using WebApp.Common.Models.Category;
-using WebApp.Common.Models.User;
 
 namespace WebApp.Common.Models.Income
 {
@@ -12,6 +11,5 @@ namespace WebApp.Common.Models.Income
         public DateTime Date { get; set; }
         public DateTime CreatedAtUtc { get; set; }
         public CategoryModel Category { get; set; } = null!;
-        public UserResponseModel User { get; set; } = null!;
     }
 }
