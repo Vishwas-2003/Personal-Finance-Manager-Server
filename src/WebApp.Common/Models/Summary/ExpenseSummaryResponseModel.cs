@@ -1,10 +1,7 @@
-﻿using WebApp.Common.Models.Expense;
+namespace WebApp.Common.Models.Summary;
 
-namespace WebApp.Common.Models.Summary
+public class ExpenseSummaryResponseModel
 {
-    public class ExpenseSummaryResponseModel
-    {
-        public List<ExpenseResponseModel> Expenses { get; set; } = new List<ExpenseResponseModel>();
-        public decimal TotalExpense { get; set; }
-    }
+    public List<ExpenseSummaryCategoryTypeSection> CategoryTypeSections { get; set; } = [];
+    public decimal TotalExpense { get; set; }
 }
