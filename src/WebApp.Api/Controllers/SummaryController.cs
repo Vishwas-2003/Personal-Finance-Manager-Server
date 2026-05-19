@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Api.Services.Interfaces;
+using WebApp.Common.Models.Summary;
 
 namespace WebApp.Api.Controllers
 {
@@ -30,6 +31,13 @@ namespace WebApp.Api.Controllers
                 return Ok(result);
             }
             return BadRequest();
+        }
+
+        [HttpGet("balance/{userId}")]
+        public async Task<ActionResult> GetBalanceSummary([FromRoute] int userId, [FromQuery] BalanceSummaryFilter? filter)
+        {
+            var result = await _summaryService.GetBalanceSummary(userId, filter);
+            return Ok(result);
         }
     }
 }
