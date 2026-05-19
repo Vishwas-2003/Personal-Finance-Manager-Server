@@ -1,4 +1,4 @@
-﻿using WebApp.Common.Models.Expense;
+using WebApp.Common.Models.Expense;
 using WebApp.Data.Entities;
 
 namespace WebApp.Api.Services.Interfaces
@@ -6,6 +6,6 @@ namespace WebApp.Api.Services.Interfaces
     public interface IExpenseService : ICRUDBaseService<Expense>
     {
         Task<bool> DeleteExpenseById(int expenseId);
-        Task<List<ExpenseResponseModel>> GetExpensesByUserId(int userId);
+        Task<List<ExpenseResponseModel>> GetExpensesByUserId(int userId, ExpenseListFilter? filter = null);
     }
 }
