@@ -33,9 +33,9 @@ namespace WebApp.Api.Controllers
         }
 
         [HttpGet("get/{userId}")]
-        public async Task<ActionResult> GetExpenses([FromRoute] int userId)
+        public async Task<ActionResult> GetExpenses([FromRoute] int userId, [FromQuery] ExpenseListFilter? filter)
         {
-            var result = await _expenseService.GetExpensesByUserId(userId);
+            var result = await _expenseService.GetExpensesByUserId(userId, filter);
             if (result != null)
             {
                 return Ok(result);

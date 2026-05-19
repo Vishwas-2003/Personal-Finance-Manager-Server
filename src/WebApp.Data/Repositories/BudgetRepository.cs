@@ -21,7 +21,6 @@ namespace WebApp.Data.Repositories
         public async Task<List<BudgetResponseModel>> GetBudgetByUserId(int userId)
         {
             var budgets = await _dbContext.Budgets
-                .Include(budget => budget.User)
                 .Include(budget => budget.Category)
                     .ThenInclude(category => category.CategoryType)
                 .Where(b => b.UserId == userId)
