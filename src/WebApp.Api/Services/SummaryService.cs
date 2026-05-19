@@ -1,35 +1,33 @@
 using WebApp.Api.Services.Interfaces;
 using WebApp.Common.Models.Summary;
+using WebApp.Common.Utilities;
 using WebApp.Data.Repositories.Interfaces;
 
-namespace WebApp.Api.Services
+namespace WebApp.Api.Services;
+
+public class SummaryService(IIncomeRepository incomeRepository, IExpenseRepository expenseRepository) : ISummaryService
 {
-    public class SummaryService(IIncomeRepository _incomeRepository, IExpenseRepository _expenseRepository) : ISummaryService
+    public async Task<IncomeSummaryResponseModel> GetTotalIncomeSummary(int userId)
     {
-        public async Task<IncomeSummaryResponseModel> GetTotalIncomeSummary(int userId)
+        var incomeEntries = await incomeRepository.GetIncomeByUserId(userId);
+        var categoryTypeSections = SummaryHierarchyUtility.GroupIncomeByCategoryHierarchy(incomeEntries);
+
+        return new IncomeSummaryResponseModel
         {
-            var incomes = await _incomeRepository.GetIncomeByUserId(userId);
+            CategoryTypeSections = categoryTypeSections,
+            TotalIncome = SummaryHierarchyUtility.SumSectionTotals(categoryTypeSections)
+        };
+    }
 
-            var summary = new IncomeSummaryResponseModel
-            {
-                Incomes = incomes,
-                TotalIncome = incomes.Sum(income => income.Amount)
-            };
+    public async Task<ExpenseSummaryResponseModel> GetTotalExpenseSummary(int userId)
+    {
+        var expenseEntries = await expenseRepository.GetExpensesByUserId(userId);
+        var categoryTypeSections = SummaryHierarchyUtility.GroupExpensesByCategoryHierarchy(expenseEntries);
 
-            return summary;
-        }
-
-        public async Task<ExpenseSummaryResponseModel> GetTotalExpenseSummary(int userId)
+        return new ExpenseSummaryResponseModel
         {
-            var expenses = await _expenseRepository.GetExpensesByUserId(userId);
-
-            var summary = new ExpenseSummaryResponseModel
-            {
-                Expenses = expenses,
-                TotalExpense = expenses.Sum(income => income.Amount)
-            };
-
-            return summary;
-        }
+            CategoryTypeSections = categoryTypeSections,
+            TotalExpense = SummaryHierarchyUtility.SumSectionTotals(categoryTypeSections)
+        };
     }
 }

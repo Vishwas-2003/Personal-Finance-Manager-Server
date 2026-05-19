@@ -1,10 +1,7 @@
-﻿using WebApp.Common.Models.Income;
+namespace WebApp.Common.Models.Summary;
 
-namespace WebApp.Common.Models.Summary
+public class IncomeSummaryResponseModel
 {
-    public class IncomeSummaryResponseModel
-    {
-        public List<IncomeResponseModel> Incomes { get; set; } = new List<IncomeResponseModel>();
-        public decimal TotalIncome { get; set; }
-    }
+    public List<IncomeSummaryCategoryTypeSection> CategoryTypeSections { get; set; } = [];
+    public decimal TotalIncome { get; set; }
 }
