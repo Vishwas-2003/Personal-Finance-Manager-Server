@@ -6,5 +6,6 @@ namespace WebApp.Api.Services.Interfaces
     {
         Task<IncomeSummaryResponseModel> GetTotalIncomeSummary(int userId);
         Task<ExpenseSummaryResponseModel> GetTotalExpenseSummary(int userId);
+        Task<BalanceSummaryResponseModel> GetBalanceSummary(int userId, BalanceSummaryFilter? filter = null);
     }
 }
