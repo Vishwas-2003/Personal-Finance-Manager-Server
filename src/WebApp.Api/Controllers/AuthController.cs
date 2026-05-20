@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserManagement.Services.Interfaces;
+using WebApp.Api.Infrastructure;
+using WebApp.Common.Constants;
+using WebApp.Common.Models.Api;
 using WebApp.Common.Models.Auth;
 
 namespace WebApp.Api.Controllers;
@@ -48,9 +51,13 @@ public class AuthController(IAuthService authService) : ControllerBase
             var response = await authService.RefreshAsync(request, cancellationToken);
             return Ok(response);
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
-            return Unauthorized(new { message = ex.Message });
+            return Unauthorized(new ApiErrorResponse
+            {
+                Code = ApiErrorCodes.SessionExpired,
+                Message = SessionExpiredResponseWriter.DefaultMessage
+            });
         }
     }
 }
