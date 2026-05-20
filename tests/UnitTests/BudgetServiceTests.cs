@@ -2,7 +2,6 @@ using Moq;
 using WebApp.Api.Services;
 using WebApp.Common.Models.Budget;
 using WebApp.Common.Models.Category;
-using WebApp.Common.Models.User;
 using WebApp.Data.Entities;
 using WebApp.Data.Repositories.Interfaces;
 
@@ -30,15 +29,6 @@ public class BudgetServiceTests
                     Name = "Groceries",
                     CategoryTypeId = 1,
                     CategoryType = "Food",
-                },
-                User = new UserResponseModel
-                {
-                    Id = userId,
-                    Name = "Jane",
-                    MobileNumber = "111",
-                    Age = 28,
-                    Address = "Addr",
-                    Email = "jane@example.com",
                 },
             },
         };

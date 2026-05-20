@@ -160,6 +160,18 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task RefreshAsync_should_throw_when_refresh_token_is_unknown()
+    {
+        var request = new RefreshTokenRequest { RefreshToken = "missing-token" };
+        _userRepository.Setup(x => x.GetByRefreshTokenAsync(request.RefreshToken, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var sut = CreateSut();
+
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => sut.RefreshAsync(request));
+    }
+
+    [Fact]
     public async Task RefreshAsync_should_throw_when_refresh_token_is_expired()
     {
         var request = new RefreshTokenRequest { RefreshToken = "expired-token" };
