@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using System.Text;
 using UserManagement.Configuration;
+using WebApp.Api.Infrastructure;
 
 namespace WebApp.Api.DependencyInjection;
 
@@ -33,6 +33,18 @@ public static class AuthenticationExtensions
                     ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = signingKey,
                     ClockSkew = TimeSpan.Zero,
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        if (!context.Response.HasStarted)
+                        {
+                            await SessionExpiredResponseWriter.WriteAsync(context.Response);
+                        }
+                    },
                 };
             });
 
