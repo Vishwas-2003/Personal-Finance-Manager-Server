@@ -2,7 +2,6 @@ using Moq;
 using WebApp.Api.Services;
 using WebApp.Common.Models.Category;
 using WebApp.Common.Models.Income;
-using WebApp.Common.Models.User;
 using WebApp.Data.Entities;
 using WebApp.Data.Repositories.Interfaces;
 
@@ -32,15 +31,6 @@ public class IncomeServiceTests
                     Name = "Monthly Salary",
                     CategoryTypeId = 4,
                     CategoryType = "Salary",
-                },
-                User = new UserResponseModel
-                {
-                    Id = userId,
-                    Name = "John",
-                    MobileNumber = "222",
-                    Age = 35,
-                    Address = "Addr",
-                    Email = "john@example.com",
                 },
             },
         };

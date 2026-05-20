@@ -1,4 +1,4 @@
-using WebApp.Common.Models.Category;
+using WebApp.Common.Models.Expense;
 using WebApp.Common.Models.Income;
 using WebApp.Common.Utilities;
 
@@ -11,9 +11,9 @@ public class SummaryHierarchyUtilityTests
     {
         var entries = new List<IncomeResponseModel>
         {
-            CreateIncome(1, 100, 1, "Groceries", 1, "Food"),
-            CreateIncome(2, 50, 2, "Dining Out", 1, "Food"),
-            CreateIncome(3, 200, 7, "Monthly Salary", 4, "Salary"),
+            TestDataHelper.CreateIncome(1, 100, 1, "Groceries", 1, "Food"),
+            TestDataHelper.CreateIncome(2, 50, 2, "Dining Out", 1, "Food"),
+            TestDataHelper.CreateIncome(3, 200, 7, "Monthly Salary", 4, "Salary"),
         };
 
         var sections = SummaryHierarchyUtility.GroupIncomeByCategoryHierarchy(entries);
@@ -32,33 +32,28 @@ public class SummaryHierarchyUtilityTests
     {
         var sections = SummaryHierarchyUtility.GroupIncomeByCategoryHierarchy(
         [
-            CreateIncome(1, 100, 1, "Groceries", 1, "Food"),
-            CreateIncome(2, 200, 7, "Monthly Salary", 4, "Salary"),
+            TestDataHelper.CreateIncome(1, 100, 1, "Groceries", 1, "Food"),
+            TestDataHelper.CreateIncome(2, 200, 7, "Monthly Salary", 4, "Salary"),
         ]);
 
         Assert.Equal(300, SummaryHierarchyUtility.SumSectionTotals(sections));
     }
 
-    private static IncomeResponseModel CreateIncome(
-        int id,
-        decimal amount,
-        int categoryId,
-        string categoryName,
-        int categoryTypeId,
-        string categoryTypeName) =>
-        new()
+    [Fact]
+    public void GroupExpensesByCategoryHierarchy_should_group_by_category_type_then_sub_category()
+    {
+        var entries = new List<ExpenseResponseModel>
         {
-            Id = id,
-            Amount = amount,
-            Source = "Test",
-            Date = DateTime.UtcNow,
-            CreatedAtUtc = DateTime.UtcNow,
-            Category = new CategoryModel
-            {
-                Id = categoryId,
-                Name = categoryName,
-                CategoryTypeId = categoryTypeId,
-                CategoryType = categoryTypeName,
-            },
+            TestDataHelper.CreateExpense(1, 80, 1, "Groceries", 1, "Food"),
+            TestDataHelper.CreateExpense(2, 20, 2, "Fuel", 2, "Transport"),
         };
+
+        var sections = SummaryHierarchyUtility.GroupExpensesByCategoryHierarchy(entries);
+
+        Assert.Equal(2, sections.Count);
+        Assert.Equal("Food", sections[0].CategoryTypeName);
+        Assert.Equal(80, sections[0].SectionTotal);
+        Assert.Equal("Transport", sections[1].CategoryTypeName);
+        Assert.Equal(20, sections[1].SectionTotal);
+    }
 }
