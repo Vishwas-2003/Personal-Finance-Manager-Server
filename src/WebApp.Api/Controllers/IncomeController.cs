@@ -1,49 +1,55 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Api.Infrastructure;
 using WebApp.Api.Services.Interfaces;
 using WebApp.Common.Models.Income;
 using WebApp.Data.Entities;
 
-namespace WebApp.Api.Controllers
+namespace WebApp.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class IncomeController(IMapper mapper, IIncomeService incomeService) : ApiControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class IncomeController(IMapper _mapper, IIncomeService _incomeService) : ControllerBase
-    {
-        [HttpPost("add")]
-        public async Task<ActionResult> AddIncome(IncomeModel income)
+    [HttpPost("add")]
+    public Task<ActionResult> AddIncome(IncomeModel income) =>
+        ExecuteAsync(async () =>
         {
-            var mappedIncome = _mapper.Map<Income>(income);
-            var result = await _incomeService.CreateAsync(mappedIncome);
+            var mappedIncome = mapper.Map<Income>(income);
+            var result = await incomeService.CreateAsync(mappedIncome);
             if (result != null)
             {
                 return Ok();
             }
-            return BadRequest();
-        }
 
-        [HttpGet("get/{userId}")]
-        public async Task<ActionResult> GetIncome([FromRoute] int userId)
+            return BadRequest();
+        });
+
+    [HttpGet("get/{userId}")]
+    public Task<ActionResult> GetIncome([FromRoute] int userId) =>
+        ExecuteAsync(async () =>
         {
-            var result = await _incomeService.GetIncomeByUserId(userId);
+            var result = await incomeService.GetIncomeByUserId(userId);
             if (result != null)
             {
                 return Ok(result);
             }
-            return BadRequest();
-        }
 
-        [HttpDelete("delete/{incomeId}")]
-        public async Task<ActionResult> DeleteIncome([FromRoute] int incomeId)
+            return BadRequest();
+        });
+
+    [HttpDelete("delete/{incomeId}")]
+    public Task<ActionResult> DeleteIncome([FromRoute] int incomeId) =>
+        ExecuteAsync(async () =>
         {
-            var result = await _incomeService.DeleteIncomeById(incomeId);
+            var result = await incomeService.DeleteIncomeById(incomeId);
             if (result)
             {
                 return Ok();
             }
+
             return BadRequest("Delete Failed!");
-        }
-    }
+        });
 }

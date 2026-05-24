@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.Api.Infrastructure;
 using WebApp.Api.Services.Interfaces;
 
-namespace WebApp.Api.Controllers
+namespace WebApp.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+public class CategoryController(ICategoryService categoryService) : ApiControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class CategoryController(ICategoryService _categoryService) : ControllerBase
-    {
-        [HttpGet("get")]
-        public async Task<ActionResult> GetCategory()
+    [HttpGet("get")]
+    public Task<ActionResult> GetCategory() =>
+        ExecuteAsync(async () =>
         {
-            var result = await _categoryService.GetCategories();
+            var result = await categoryService.GetCategories();
             if (result != null)
             {
                 return Ok(result);
             }
+
             return BadRequest();
-        }
-    }
+        });
 }
