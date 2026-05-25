@@ -11,4 +11,5 @@ public class Expense
     public string? Description { get; set; }
     public DateTime Date { get; set; }
     public DateTime CreatedAtUtc { get; set; }
+    public bool InActive { get; set; }
 }

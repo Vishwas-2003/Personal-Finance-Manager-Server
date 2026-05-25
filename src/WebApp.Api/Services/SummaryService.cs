@@ -15,7 +15,9 @@ public class SummaryService(
 {
     public async Task<IncomeSummaryResponseModel> GetTotalIncomeSummary(int userId)
     {
-        var incomeEntries = await incomeRepository.GetIncomeByUserId(userId);
+        var incomeEntries = (await incomeRepository.GetIncomeByUserId(userId))
+            .Where(i => !i.InActive)
+            .ToList();
         var categoryTypeSections = SummaryHierarchyUtility.GroupIncomeByCategoryHierarchy(incomeEntries);
 
         return new IncomeSummaryResponseModel
@@ -27,7 +29,9 @@ public class SummaryService(
 
     public async Task<ExpenseSummaryResponseModel> GetTotalExpenseSummary(int userId)
     {
-        var expenseEntries = await expenseRepository.GetExpensesByUserId(userId);
+        var expenseEntries = (await expenseRepository.GetExpensesByUserId(userId))
+            .Where(e => !e.InActive)
+            .ToList();
         var categoryTypeSections = SummaryHierarchyUtility.GroupExpensesByCategoryHierarchy(expenseEntries);
 
         return new ExpenseSummaryResponseModel
@@ -39,8 +43,12 @@ public class SummaryService(
 
     public async Task<BalanceSummaryResponseModel> GetBalanceSummary(int userId, BalanceSummaryFilter? filter = null)
     {
-        var incomes = ApplyDateFilter(await incomeService.GetIncomeByUserId(userId), filter);
-        var expenses = await expenseService.GetExpensesByUserId(userId, ToExpenseFilter(filter));
+        var incomes = ApplyDateFilter(await incomeService.GetIncomeByUserId(userId), filter)
+            .Where(i => !i.InActive)
+            .ToList();
+        var expenses = (await expenseService.GetExpensesByUserId(userId, ToExpenseFilter(filter)))
+            .Where(e => !e.InActive)
+            .ToList();
 
         var credits = incomes
             .Select(i => new BalanceSummaryCreditLine

@@ -40,6 +40,19 @@ public class ExpenseController(IExpenseService expenseService, IMapper mapper) :
             return BadRequest();
         });
 
+    [HttpPut("update/{expenseId}")]
+    public Task<ActionResult> UpdateExpense([FromRoute] int expenseId, ExpenseModel expense) =>
+        ExecuteAsync(async () =>
+        {
+            var result = await expenseService.UpdateExpenseById(expenseId, expense);
+            if (result)
+            {
+                return Ok();
+            }
+
+            return BadRequest("Update failed!");
+        });
+
     [HttpDelete("delete/{expenseId}")]
     public Task<ActionResult> DeleteExpense([FromRoute] int expenseId) =>
         ExecuteAsync(async () =>

@@ -1,27 +1,66 @@
 using WebApp.Api.Services.Interfaces;
 using WebApp.Common.Models.Budget;
+using WebApp.Common.Utilities;
 using WebApp.Data.Entities;
 using WebApp.Data.Repositories.Interfaces;
 
-namespace WebApp.Api.Services
+namespace WebApp.Api.Services;
+
+public class BudgetService : CRUDBaseService<Budget>, IBudgetService
 {
-    public class BudgetService : CRUDBaseService<Budget>, IBudgetService
+    private readonly IBudgetRepository _budgetRepository;
+
+    public BudgetService(IBudgetRepository budgetRepository) : base(budgetRepository)
     {
-        private readonly IBudgetRepository _budgetRepository;
+        _budgetRepository = budgetRepository;
+    }
 
-        public BudgetService(IBudgetRepository budgetRepository) : base(budgetRepository)
+    public async Task<List<BudgetResponseModel>> GetBudgetByUserId(int userId, BudgetListFilter? filter = null)
+    {
+        var budgets = await _budgetRepository.GetBudgetByUserId(userId);
+
+        if (filter?.CategoryId is int categoryId)
         {
-            _budgetRepository = budgetRepository;
+            budgets = budgets.Where(b => b.Category.Id == categoryId).ToList();
         }
 
-        public async Task<List<BudgetResponseModel>> GetBudgetByUserId(int userId)
+        var keywords = KeywordFilterUtility.SplitKeywords(filter?.Keywords).ToList();
+        if (keywords.Count > 0)
         {
-            return await _budgetRepository.GetBudgetByUserId(userId);
+            budgets = budgets.Where(b => KeywordFilterUtility.MatchesAnyKeyword(
+                [
+                    b.Id.ToString(),
+                    b.LimitAmount.ToString("0.##"),
+                    b.SpentAmount.ToString("0.##"),
+                    b.Category.Name,
+                    b.Category.CategoryType,
+                    b.UpdatedAtUtc.ToString("yyyy-MM-dd"),
+                    b.InActive ? "archived" : "active"
+                ],
+                keywords)).ToList();
         }
 
-        public async Task<bool> DeleteBudgetById(int budgetId)
+        return budgets
+            .OrderByDescending(b => b.UpdatedAtUtc)
+            .ThenByDescending(b => b.Id)
+            .ToList();
+    }
+
+    public async Task<bool> DeleteBudgetById(int budgetId) => await DeleteAsync(budgetId);
+
+    public async Task<bool> UpdateBudgetById(int budgetId, BudgetModel model)
+    {
+        var budget = await ReadAsync(budgetId);
+        if (budget is null || budget.InActive)
         {
-            return await DeleteAsync(budgetId);
+            return false;
         }
+
+        budget.CategoryId = model.CategoryId;
+        budget.LimitAmount = model.LimitAmount;
+        budget.SpentAmount = model.SpentAmount;
+        budget.UpdatedAtUtc = DateTime.UtcNow;
+        await UpdateAsync(budget);
+        return true;
     }
 }

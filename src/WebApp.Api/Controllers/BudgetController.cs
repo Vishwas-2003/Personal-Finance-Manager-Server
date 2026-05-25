@@ -28,16 +28,29 @@ public class BudgetController(IMapper mapper, IBudgetService budgetService) : Ap
         });
 
     [HttpGet("get/{userId}")]
-    public Task<ActionResult> GetBudget([FromRoute] int userId) =>
+    public Task<ActionResult> GetBudget([FromRoute] int userId, [FromQuery] BudgetListFilter? filter) =>
         ExecuteAsync(async () =>
         {
-            var result = await budgetService.GetBudgetByUserId(userId);
+            var result = await budgetService.GetBudgetByUserId(userId, filter);
             if (result != null)
             {
                 return Ok(result);
             }
 
             return BadRequest();
+        });
+
+    [HttpPut("update/{budgetId}")]
+    public Task<ActionResult> UpdateBudget([FromRoute] int budgetId, BudgetModel budget) =>
+        ExecuteAsync(async () =>
+        {
+            var result = await budgetService.UpdateBudgetById(budgetId, budget);
+            if (result)
+            {
+                return Ok();
+            }
+
+            return BadRequest("Update failed!");
         });
 
     [HttpDelete("delete/{budgetId}")]

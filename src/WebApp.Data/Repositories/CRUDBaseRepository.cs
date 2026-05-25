@@ -16,7 +16,7 @@ namespace WebApp.Data.Repositories
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public virtual async Task<bool> DeleteAsync(int id)
         {
             var entity = await ReadAsync(id);
             if (entity == null)

@@ -6,6 +6,7 @@ namespace WebApp.Api.Services.Interfaces
     public interface IBudgetService : ICRUDBaseService<Budget>
     {
         Task<bool> DeleteBudgetById(int budgetId);
-        Task<List<BudgetResponseModel>> GetBudgetByUserId(int userId);
+        Task<List<BudgetResponseModel>> GetBudgetByUserId(int userId, BudgetListFilter? filter = null);
+        Task<bool> UpdateBudgetById(int budgetId, BudgetModel model);
     }
 }

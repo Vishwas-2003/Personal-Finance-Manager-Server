@@ -10,4 +10,5 @@ public class Budget
     public decimal LimitAmount { get; set; }
     public decimal SpentAmount { get; set; }
     public DateTime UpdatedAtUtc { get; set; }
+    public bool InActive { get; set; }
 }

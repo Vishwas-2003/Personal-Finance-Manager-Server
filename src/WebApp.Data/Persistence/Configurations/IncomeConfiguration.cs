@@ -30,6 +30,10 @@ public class IncomeConfiguration : IEntityTypeConfiguration<Income>
             .IsRequired()
             .HasDefaultValueSql("SYSUTCDATETIME()");
 
+        builder.Property(e => e.InActive)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.HasIndex(e => e.CategoryId)
             .HasDatabaseName("IX_Incomes_CategoryId");
     }

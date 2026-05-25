@@ -26,6 +26,10 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .IsRequired()
             .HasDefaultValueSql("SYSUTCDATETIME()");
 
+        builder.Property(e => e.InActive)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.HasIndex(e => new { e.UserId, e.Date })
             .HasDatabaseName("IX_Expenses_UserId_Date");
     }

@@ -38,7 +38,7 @@ public class BudgetServiceTests
 
         var result = await sut.GetBudgetByUserId(userId);
 
-        Assert.Same(expected, result);
+        Assert.Equal(expected, result);
         _repository.Verify(r => r.GetBudgetByUserId(userId), Times.Once);
     }
 

@@ -7,5 +7,6 @@ namespace WebApp.Api.Services.Interfaces
     {
         Task<bool> DeleteExpenseById(int expenseId);
         Task<List<ExpenseResponseModel>> GetExpensesByUserId(int userId, ExpenseListFilter? filter = null);
+        Task<bool> UpdateExpenseById(int expenseId, ExpenseModel model);
     }
 }
