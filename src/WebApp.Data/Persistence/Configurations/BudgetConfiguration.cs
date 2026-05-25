@@ -27,6 +27,10 @@ public class BudgetConfiguration : IEntityTypeConfiguration<Budget>
             .IsRequired()
             .HasDefaultValueSql("SYSUTCDATETIME()");
 
+        builder.Property(e => e.InActive)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.HasIndex(e => new { e.UserId, e.CategoryId })
             .IsUnique()
             .HasDatabaseName("UX_Budgets_UserId_CategoryId");

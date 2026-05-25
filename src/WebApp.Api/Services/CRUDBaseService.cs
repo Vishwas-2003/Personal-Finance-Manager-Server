@@ -9,7 +9,7 @@ namespace WebApp.Api.Services
         public CRUDBaseService(ICRUDBaseRepository<T> crudBaseRepository) { 
             _crudBaseRepository = crudBaseRepository;
         }
-        public async Task<T> CreateAsync(T entity)
+        public virtual async Task<T> CreateAsync(T entity)
         {
             return await _crudBaseRepository.CreateAsync(entity);
         }

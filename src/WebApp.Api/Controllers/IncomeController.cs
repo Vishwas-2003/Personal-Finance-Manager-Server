@@ -28,16 +28,29 @@ public class IncomeController(IMapper mapper, IIncomeService incomeService) : Ap
         });
 
     [HttpGet("get/{userId}")]
-    public Task<ActionResult> GetIncome([FromRoute] int userId) =>
+    public Task<ActionResult> GetIncome([FromRoute] int userId, [FromQuery] IncomeListFilter? filter) =>
         ExecuteAsync(async () =>
         {
-            var result = await incomeService.GetIncomeByUserId(userId);
+            var result = await incomeService.GetIncomeByUserId(userId, filter);
             if (result != null)
             {
                 return Ok(result);
             }
 
             return BadRequest();
+        });
+
+    [HttpPut("update/{incomeId}")]
+    public Task<ActionResult> UpdateIncome([FromRoute] int incomeId, IncomeModel income) =>
+        ExecuteAsync(async () =>
+        {
+            var result = await incomeService.UpdateIncomeById(incomeId, income);
+            if (result)
+            {
+                return Ok();
+            }
+
+            return BadRequest("Update failed!");
         });
 
     [HttpDelete("delete/{incomeId}")]

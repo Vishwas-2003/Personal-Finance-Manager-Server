@@ -1,6 +1,6 @@
-namespace WebApp.Common.Models.Expense;
+namespace WebApp.Common.Models.Income;
 
-public class ExpenseListFilter
+public class IncomeListFilter
 {
     public int? CategoryId { get; set; }
     public DateTime? FromDate { get; set; }

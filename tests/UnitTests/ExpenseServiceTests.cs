@@ -24,7 +24,7 @@ public class ExpenseServiceTests
 
         var result = await sut.GetExpensesByUserId(userId);
 
-        Assert.Same(expected, result);
+        Assert.Equal(expected, result);
         _repository.Verify(r => r.GetExpensesByUserId(userId), Times.Once);
     }
 

@@ -79,7 +79,7 @@ public class IncomeControllerTests
         _incomeService.Setup(s => s.GetIncomeByUserId(2)).ReturnsAsync(list);
         var sut = new IncomeController(_mapper.Object, _incomeService.Object);
 
-        var result = await sut.GetIncome(2);
+        var result = await sut.GetIncome(2, null);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         Assert.Same(list, ok.Value);
@@ -91,7 +91,7 @@ public class IncomeControllerTests
         _incomeService.Setup(s => s.GetIncomeByUserId(2)).ReturnsAsync((List<IncomeResponseModel>)null!);
         var sut = new IncomeController(_mapper.Object, _incomeService.Object);
 
-        var result = await sut.GetIncome(2);
+        var result = await sut.GetIncome(2, null);
 
         Assert.IsType<BadRequestResult>(result);
     }

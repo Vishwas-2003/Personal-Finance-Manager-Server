@@ -64,7 +64,7 @@ public class BudgetControllerTests
         _budgetService.Setup(s => s.GetBudgetByUserId(4)).ReturnsAsync(list);
         var sut = new BudgetController(_mapper.Object, _budgetService.Object);
 
-        var result = await sut.GetBudget(4);
+        var result = await sut.GetBudget(4, null);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         Assert.Same(list, ok.Value);
@@ -76,7 +76,7 @@ public class BudgetControllerTests
         _budgetService.Setup(s => s.GetBudgetByUserId(4)).ReturnsAsync((List<BudgetResponseModel>)null!);
         var sut = new BudgetController(_mapper.Object, _budgetService.Object);
 
-        var result = await sut.GetBudget(4);
+        var result = await sut.GetBudget(4, null);
 
         Assert.IsType<BadRequestResult>(result);
     }

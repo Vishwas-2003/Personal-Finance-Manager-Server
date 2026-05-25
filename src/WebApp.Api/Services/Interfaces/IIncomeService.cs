@@ -6,6 +6,7 @@ namespace WebApp.Api.Services.Interfaces
     public interface IIncomeService : ICRUDBaseService<Income>
     {
         Task<bool> DeleteIncomeById(int incomeId);
-        Task<List<IncomeResponseModel>> GetIncomeByUserId(int userId);
+        Task<List<IncomeResponseModel>> GetIncomeByUserId(int userId, IncomeListFilter? filter = null);
+        Task<bool> UpdateIncomeById(int incomeId, IncomeModel model);
     }
 }
