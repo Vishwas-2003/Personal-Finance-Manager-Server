@@ -136,6 +136,18 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task LoginAsync_should_throw_when_user_not_found()
+    {
+        var request = new LoginRequest { Email = "missing@example.com", Password = "Pass@123" };
+        _userRepository.Setup(x => x.GetByEmailAsync("missing@example.com", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var sut = CreateSut();
+
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => sut.LoginAsync(request));
+    }
+
+    [Fact]
     public async Task LoginAsync_should_throw_when_password_is_invalid()
     {
         var request = new LoginRequest { Email = "test@example.com", Password = "wrong" };
@@ -157,6 +169,28 @@ public class AuthServiceTests
         var sut = CreateSut();
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => sut.LoginAsync(request));
+    }
+
+    [Fact]
+    public async Task RefreshAsync_should_throw_when_refresh_token_expiry_is_null()
+    {
+        var request = new RefreshTokenRequest { RefreshToken = "no-expiry" };
+        _userRepository.Setup(x => x.GetByRefreshTokenAsync(request.RefreshToken, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User
+            {
+                Name = "Test User",
+                MobileNumber = "9999999999",
+                Age = 30,
+                Address = "Test Address",
+                Email = "test@example.com",
+                PasswordHash = "hash",
+                RefreshToken = request.RefreshToken,
+                RefreshTokenExpiresUtc = null,
+            });
+
+        var sut = CreateSut();
+
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => sut.RefreshAsync(request));
     }
 
     [Fact]

@@ -92,4 +92,125 @@ public class IncomeServiceTests
         Assert.Same(entity, result);
         _repository.Verify(r => r.CreateAsync(entity), Times.Once);
     }
+
+    [Fact]
+    public async Task CreateAsync_should_reject_future_dates()
+    {
+        var entity = new Income
+        {
+            UserId = 1,
+            Amount = 100,
+            CategoryId = 1,
+            Source = "Bonus",
+            Date = DateTime.Today.AddDays(3),
+            CreatedAtUtc = DateTime.UtcNow,
+        };
+        var sut = new IncomeService(_repository.Object);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => sut.CreateAsync(entity));
+    }
+
+    [Fact]
+    public async Task GetIncomeByUserId_should_apply_category_date_and_keyword_filters()
+    {
+        const int userId = 5;
+        var incomes = new List<IncomeResponseModel>
+        {
+            TestDataHelper.CreateIncome(1, 100, 1, "Salary", 4, "Income", new DateTime(2026, 5, 5), "payroll"),
+            TestDataHelper.CreateIncome(2, 200, 2, "Freelance", 4, "Income", new DateTime(2026, 6, 1), "client work"),
+            TestDataHelper.CreateIncome(3, 50, 1, "Salary", 4, "Income", new DateTime(2026, 5, 20), "bonus"),
+        };
+        _repository.Setup(r => r.GetIncomeByUserId(userId)).ReturnsAsync(incomes);
+
+        var filter = new IncomeListFilter
+        {
+            CategoryId = 1,
+            FromDate = new DateTime(2026, 5, 1),
+            ToDate = new DateTime(2026, 5, 31),
+            Keywords = "bonus",
+        };
+        var sut = new IncomeService(_repository.Object);
+
+        var result = await sut.GetIncomeByUserId(userId, filter);
+
+        Assert.Single(result);
+        Assert.Equal(3, result[0].Id);
+    }
+
+    [Fact]
+    public async Task UpdateIncomeById_should_update_when_income_exists()
+    {
+        const int incomeId = 11;
+        var existing = new Income
+        {
+            Id = incomeId,
+            UserId = 1,
+            Amount = 100,
+            CategoryId = 1,
+            Source = "Old",
+            Date = DateTime.Today,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
+        var model = new IncomeModel
+        {
+            UserId = 1,
+            Amount = 150,
+            CategoryId = 2,
+            Source = "New",
+            Notes = "note",
+            Date = DateTime.Today,
+        };
+        _repository.Setup(r => r.ReadAsync(incomeId)).ReturnsAsync(existing);
+        _repository.Setup(r => r.UpdateAsync(existing)).ReturnsAsync(existing);
+
+        var sut = new IncomeService(_repository.Object);
+
+        var result = await sut.UpdateIncomeById(incomeId, model);
+
+        Assert.True(result);
+        Assert.Equal(150, existing.Amount);
+        Assert.Equal(2, existing.CategoryId);
+        Assert.Equal("New", existing.Source);
+        Assert.Equal("note", existing.Notes);
+    }
+
+    [Fact]
+    public async Task UpdateIncomeById_should_return_false_when_income_missing_or_inactive()
+    {
+        _repository.Setup(r => r.ReadAsync(1)).ReturnsAsync((Income)null!);
+        var sut = new IncomeService(_repository.Object);
+
+        var missing = await sut.UpdateIncomeById(1, new IncomeModel
+        {
+            UserId = 1,
+            Amount = 1,
+            CategoryId = 1,
+            Date = DateTime.Today,
+            Source = "x",
+        });
+        Assert.False(missing);
+
+        var inactive = new Income
+        {
+            Id = 2,
+            UserId = 1,
+            Amount = 1,
+            CategoryId = 1,
+            Source = "x",
+            Date = DateTime.Today,
+            InActive = true,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
+        _repository.Setup(r => r.ReadAsync(2)).ReturnsAsync(inactive);
+
+        var inactiveResult = await sut.UpdateIncomeById(2, new IncomeModel
+        {
+            UserId = 1,
+            Amount = 1,
+            CategoryId = 1,
+            Date = DateTime.Today,
+            Source = "x",
+        });
+        Assert.False(inactiveResult);
+    }
 }

@@ -91,4 +91,49 @@ public class ExpenseControllerTests
         var badRequest = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Delete Failed!", badRequest.Value);
     }
+
+    [Fact]
+    public async Task AddExpense_returns_BadRequest_when_create_returns_null()
+    {
+        var model = new ExpenseModel
+        {
+            UserId = 1,
+            Amount = 10,
+            CategoryId = 1,
+            Date = DateTime.UtcNow,
+        };
+        var entity = new Expense { UserId = 1, Amount = 10, CategoryId = 1, Date = model.Date, CreatedAtUtc = DateTime.UtcNow };
+        _mapper.Setup(m => m.Map<Expense>(model)).Returns(entity);
+        _expenseService.Setup(s => s.CreateAsync(entity)).ReturnsAsync((Expense)null!);
+        var sut = new ExpenseController(_expenseService.Object, _mapper.Object);
+
+        var result = await sut.AddExpense(model);
+
+        Assert.IsType<BadRequestResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateExpense_returns_Ok_when_update_succeeds()
+    {
+        var model = new ExpenseModel { UserId = 1, Amount = 20, CategoryId = 1, Date = DateTime.UtcNow };
+        _expenseService.Setup(s => s.UpdateExpenseById(5, model)).ReturnsAsync(true);
+        var sut = new ExpenseController(_expenseService.Object, _mapper.Object);
+
+        var result = await sut.UpdateExpense(5, model);
+
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateExpense_returns_BadRequest_when_update_fails()
+    {
+        var model = new ExpenseModel { UserId = 1, Amount = 20, CategoryId = 1, Date = DateTime.UtcNow };
+        _expenseService.Setup(s => s.UpdateExpenseById(5, model)).ReturnsAsync(false);
+        var sut = new ExpenseController(_expenseService.Object, _mapper.Object);
+
+        var result = await sut.UpdateExpense(5, model);
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Update failed!", badRequest.Value);
+    }
 }

@@ -118,4 +118,29 @@ public class IncomeControllerTests
         var badRequest = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Delete Failed!", badRequest.Value);
     }
+
+    [Fact]
+    public async Task UpdateIncome_returns_Ok_when_update_succeeds()
+    {
+        var model = new IncomeModel { UserId = 1, Amount = 100, CategoryId = 2, Date = DateTime.UtcNow, Source = "Pay" };
+        _incomeService.Setup(s => s.UpdateIncomeById(3, model)).ReturnsAsync(true);
+        var sut = new IncomeController(_mapper.Object, _incomeService.Object);
+
+        var result = await sut.UpdateIncome(3, model);
+
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateIncome_returns_BadRequest_when_update_fails()
+    {
+        var model = new IncomeModel { UserId = 1, Amount = 100, CategoryId = 2, Date = DateTime.UtcNow, Source = "Pay" };
+        _incomeService.Setup(s => s.UpdateIncomeById(3, model)).ReturnsAsync(false);
+        var sut = new IncomeController(_mapper.Object, _incomeService.Object);
+
+        var result = await sut.UpdateIncome(3, model);
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Update failed!", badRequest.Value);
+    }
 }
