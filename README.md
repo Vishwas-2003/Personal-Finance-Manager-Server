@@ -217,6 +217,8 @@ dotnet ef database update `
 dotnet test tests/UnitTests
 ```
 
+Business-logic coverage (WebApp.Api, UserManagement, WebApp.Common; excludes WebApp.Data and startup/DI wiring) is collected automatically and must stay at or above **85%** line coverage. Stop the running API first if the build reports locked files under `src/WebApp.Api/bin`.
+
 Unit test projects (`tests/UnitTests`):
 
 | Test class | Coverage |
@@ -228,6 +230,10 @@ Unit test projects (`tests/UnitTests`):
 | `ExpenseServiceTests` / `ExpenseControllerTests` | Expense CRUD and list filters |
 | `SummaryServiceTests` / `SummaryControllerTests` | Income/expense summaries and balance summary |
 | `SummaryHierarchyUtilityTests` | Category hierarchy grouping for summaries |
+| `AuthControllerTests` / `CategoryControllerTests` | Auth and category API endpoints |
+| `JwtTokenServiceTests` | JWT and refresh token generation |
+| `ControllerExceptionHandlerTests` | API exception mapping |
+| `KeywordFilterUtilityTests` / `TransactionDateValidatorTests` | Shared filter and date validation utilities |
 
 > Stop the running API process if the build reports locked files under `src/WebApp.Api/bin`.
 

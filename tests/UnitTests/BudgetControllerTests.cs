@@ -103,4 +103,29 @@ public class BudgetControllerTests
         var badRequest = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Delete Failed!", badRequest.Value);
     }
+
+    [Fact]
+    public async Task UpdateBudget_returns_Ok_when_update_succeeds()
+    {
+        var model = new BudgetModel { UserId = 1, CategoryId = 2, LimitAmount = 400, SpentAmount = 10 };
+        _budgetService.Setup(s => s.UpdateBudgetById(6, model)).ReturnsAsync(true);
+        var sut = new BudgetController(_mapper.Object, _budgetService.Object);
+
+        var result = await sut.UpdateBudget(6, model);
+
+        Assert.IsType<OkResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateBudget_returns_BadRequest_when_update_fails()
+    {
+        var model = new BudgetModel { UserId = 1, CategoryId = 2, LimitAmount = 400, SpentAmount = 10 };
+        _budgetService.Setup(s => s.UpdateBudgetById(6, model)).ReturnsAsync(false);
+        var sut = new BudgetController(_mapper.Object, _budgetService.Object);
+
+        var result = await sut.UpdateBudget(6, model);
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Update failed!", badRequest.Value);
+    }
 }

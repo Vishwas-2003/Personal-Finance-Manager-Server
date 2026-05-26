@@ -1,3 +1,4 @@
+using WebApp.Common.Models.Budget;
 using WebApp.Common.Models.Category;
 using WebApp.Common.Models.Expense;
 using WebApp.Common.Models.Income;
@@ -54,6 +55,24 @@ internal static class TestDataHelper
             Description = description,
             Date = date ?? DateTime.UtcNow.Date,
             CreatedAtUtc = DateTime.UtcNow,
+            Category = CreateCategory(categoryId, categoryName, categoryTypeId, categoryTypeName),
+        };
+
+    public static BudgetResponseModel CreateBudget(
+        int id,
+        decimal limitAmount,
+        decimal spentAmount,
+        int categoryId,
+        string categoryName,
+        int categoryTypeId,
+        string categoryTypeName,
+        DateTime? updatedAtUtc = null) =>
+        new()
+        {
+            Id = id,
+            LimitAmount = limitAmount,
+            SpentAmount = spentAmount,
+            UpdatedAtUtc = updatedAtUtc ?? DateTime.UtcNow,
             Category = CreateCategory(categoryId, categoryName, categoryTypeId, categoryTypeName),
         };
 }
